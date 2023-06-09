@@ -1,0 +1,78 @@
+name: Generate GeoIP and GeoSite for Indonesia
+
+on:
+  schedule:
+    - cron: "0 17 * * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.17'  # Ganti dengan versi Go yang kompatibel
+
+      - name: Create folder
+        run: |
+          mkdir -p geoip
+          mkdir -p geosite
+
+      - name: Copy files
+        run: |
+          cp -r $GITHUB_WORKSPACE/fyn170/geo-sing-box/geoip geoip
+          cp -r $GITHUB_WORKSPACE/fyn170/geo-sing-box/geosite geosite
+
+      - name: Create go.mod
+        run: |
+          cd geoip
+          go mod init geoip
+          cd ../geosite
+          go mod init geosite
+
+      - name: Build GeoIP
+        run: |
+          cd geoip
+          go build -o geoip.dat
+
+      - name: Build GeoSite
+        run: |
+          cd geosite
+          go build -o geosite.dat
+
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload GeoIP
+        uses: actions/upload-artifact@v2
+        with:
+          name: GeoIP
+          path: geoip/geoip.dat
+
+      - name: Upload GeoSite
+        uses: actions/upload-artifact@v2
+        with:
+          name: GeoSite
+          path: geosite/geosite.dat
+
+      - name: Trigger release
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: Trigger release
+          title: Release ${{ github.ref }}
+          body: Automated release triggered by schedule
+          branch: release
+          base: main
