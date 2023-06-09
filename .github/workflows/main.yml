@@ -23,18 +23,19 @@ jobs:
           mkdir data
           curl -o data/geosite.dat https://github.com/malikshi/v2ray-rules-dat/releases/download/202306091130/geosite.dat
 
+      - name: Install v2ray-core dependencies
+        run: |
+          go get -u github.com/v2fly/v2ray-core/v4@v4.45.2
+          go get -u github.com/v2fly/v2ray-ext/tools/build
+
       - name: Build GeoIP
         run: |
-          go get -u github.com/v2fly/v2ray-core/v4
-          go get -u github.com/v2fly/v2ray-ext/tools/build
           cd $GOPATH/src/github.com/v2fly/v2ray-ext/tools/geoip
           go build
-          ./geoip --country-db=/path/to/GeoLite2-Country.mmdb --output=./geoip.dat --format=legacy
+          ./geoip --country-db=https://github.com/malikshi/geoip/releases/download/202306091128/Country.mmdb --output=./geoip.dat --format=legacy
 
       - name: Build GeoSite
         run: |
-          go get -u github.com/v2fly/v2ray-core/v4
-          go get -u github.com/v2fly/v2ray-ext/tools/build
           cd $GOPATH/src/github.com/v2fly/v2ray-ext/tools/geosite
           go build
           ./geosite
