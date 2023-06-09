@@ -71,7 +71,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./sing-geoip/geoip.db
-          asset_name: geoip-${{ steps.time.outputs.time }}.db
+          asset_name: geoip.db
           asset_content_type: application/octet-stream
 
       - name: Release geoip-cn.db
@@ -81,7 +81,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./sing-geoip/geoip-cn.db
-          asset_name: geoip-cn-${{ steps.time.outputs.time }}.db
+          asset_name: geoip-cn.db
           asset_content_type: application/octet-stream
 
       - name: Delete Old Release
