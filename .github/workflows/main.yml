@@ -23,28 +23,20 @@ jobs:
           mkdir data
           curl -o data/geosite.dat https://github.com/malikshi/v2ray-rules-dat/releases/download/202306091130/geosite.dat
 
-      - name: Install v2ray-core dependencies
+      - name: Build GeoIP and GeoSite
         run: |
+          cd $GITHUB_WORKSPACE
+          go mod init github.com/fyn170/geo-sing-box
           go get -u github.com/v2fly/v2ray-core/v4@v4.45.2
           go get -u github.com/v2fly/v2ray-ext/tools/build
-
-      - name: Build GeoIP
-        run: |
-          cd $GOPATH/src/github.com/v2fly/v2ray-ext/tools/geoip
-          go build
-          ./geoip --country-db=https://github.com/malikshi/geoip/releases/download/202306091128/Country.mmdb --output=./geoip.dat --format=legacy
-
-      - name: Build GeoSite
-        run: |
-          cd $GOPATH/src/github.com/v2fly/v2ray-ext/tools/geosite
-          go build
-          ./geosite
+          go build github.com/v2fly/v2ray-ext/tools/geoip
+          go build github.com/v2fly/v2ray-ext/tools/geosite
 
       - name: Create artifacts
         run: |
           mkdir artifacts
-          cp $GOPATH/src/github.com/v2fly/v2ray-ext/tools/geoip/geoip.dat artifacts/
-          cp $GOPATH/src/github.com/v2fly/v2ray-ext/tools/geosite/geosite.dat artifacts/
+          cp $GITHUB_WORKSPACE/geoip artifacts/
+          cp $GITHUB_WORKSPACE/geosite artifacts/
 
       - name: Create release
         id: create_release
@@ -70,8 +62,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/geoip.dat
-          asset_name: geoip.dat
+          asset_path: ./artifacts/geoip
+          asset_name: geoip
           asset_content_type: application/octet-stream
 
       - name: Attach artifacts to release
@@ -80,6 +72,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/geosite.dat
-          asset_name: geosite.dat
+          asset_path: ./artifacts/geosite
+          asset_name: geosite
           asset_content_type: application/octet-stream
