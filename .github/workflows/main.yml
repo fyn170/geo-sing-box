@@ -25,7 +25,8 @@ jobs:
 
       - name: Download and install netip package
         run: |
-          go get -u github.com/netip/pkg@latest
+            export GOPRIVATE=github.com/netip/pkg
+            go get -u github.com/netip/pkg@latest
 
       - name: Build GeoIP and GeoSite
         run: |
