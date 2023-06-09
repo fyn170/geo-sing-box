@@ -1,4 +1,4 @@
-name: Build Geo-Sing-Box
+name: Build GeoIP and GeoSite
 
 on:
   push:
@@ -18,20 +18,68 @@ jobs:
         with:
           go-version: '1.16'
 
+      - name: Download GeoLite2 Data
+        run: |
+          mkdir data
+          curl -o data/GeoLite2-Country.mmdb.gz http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.mmdb.gz
+          gzip -d data/GeoLite2-Country.mmdb.gz
+
       - name: Build GeoIP
         run: |
-          cd $GITHUB_WORKSPACE/GeoLite2-Country
+          go get -u github.com/v2fly/v2ray-core/v4
+          go get -u github.com/v2fly/v2ray-ext/tools/build
+          cd $GOPATH/src/github.com/v2fly/v2ray-ext/tools/geoip
           go build
+          ./geoip --country-db=/path/to/GeoLite2-Country.mmdb --output=./geoip.dat --format=legacy
 
       - name: Build GeoSite
         run: |
-          cd $GITHUB_WORKSPACE/geosite
+          go get -u github.com/v2fly/v2ray-core/v4
+          go get -u github.com/v2fly/v2ray-ext/tools/build
+          cd $GOPATH/src/github.com/v2fly/v2ray-ext/tools/geosite
           go build
+          ./geosite
 
-      - name: Archive artifacts
+      - name: Create artifacts
+        run: |
+          mkdir artifacts
+          cp $GOPATH/src/github.com/v2fly/v2ray-ext/tools/geoip/geoip.dat artifacts/
+          cp $GOPATH/src/github.com/v2fly/v2ray-ext/tools/geosite/geosite.dat artifacts/
+
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.run_number }}
+          release_name: Release ${{ github.run_number }}
+          body: Auto-generated release
+          draft: false
+          prerelease: false
+
+      - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: artifacts
-          path: |
-            $GITHUB_WORKSPACE/GeoLite2-Country/GeoLite2-Country
-            $GITHUB_WORKSPACE/geosite/geosite
+          name: GeoIP and GeoSite
+          path: artifacts/
+
+      - name: Attach artifacts to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./artifacts/geoip.dat
+          asset_name: geoip.dat
+          asset_content_type: application/octet-stream
+
+      - name: Attach artifacts to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./artifacts/geosite.dat
+          asset_name: geosite.dat
+          asset_content_type: application/octet-stream
