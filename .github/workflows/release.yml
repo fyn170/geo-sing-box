@@ -25,6 +25,7 @@ jobs:
         run: |
           cd sing-geosite
           go run -v .
+      
       - name: Build geoip
         id: build_ip
         run: |
@@ -52,7 +53,7 @@ jobs:
           release_name: ${{ steps.time.outputs.time }}
           draft: false
           prerelease: false
-      
+
       - name: Release geosite.db
         uses: actions/upload-release-asset@v1
         env:
@@ -60,9 +61,9 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./sing-geosite/geosite.db
-          asset_name: geosite.db
+          asset_name: geosite-${{ steps.time.outputs.time }}.db
           asset_content_type: application/octet-stream
-      
+
       - name: Release geoip.db
         uses: actions/upload-release-asset@v1
         env:
@@ -70,9 +71,9 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./sing-geoip/geoip.db
-          asset_name: geoip.db
+          asset_name: geoip-${{ steps.time.outputs.time }}.db
           asset_content_type: application/octet-stream
-      
+
       - name: Release geoip-cn.db
         uses: actions/upload-release-asset@v1
         env:
@@ -80,7 +81,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./sing-geoip/geoip-cn.db
-          asset_name: geoip-cn.db
+          asset_name: geoip-cn-${{ steps.time.outputs.time }}.db
           asset_content_type: application/octet-stream
 
       - name: Delete Old Release
