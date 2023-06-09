@@ -21,8 +21,9 @@ jobs:
       - name: Download GeoLite2 Data
         run: |
           mkdir data
-          curl -o data/GeoLite2-Country.mmdb.gz http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.mmdb.gz
-          gzip -d data/GeoLite2-Country.mmdb.gz
+          curl -o data/GeoLite2-Country.mmdb.gz https://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.tar.gz
+          tar -xzf data/GeoLite2-Country.mmdb.gz -C data/
+          mv data/GeoLite2-Country_*/GeoLite2-Country.mmdb data/
 
       - name: Build GeoIP
         run: |
