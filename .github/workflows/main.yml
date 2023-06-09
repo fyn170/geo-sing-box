@@ -23,12 +23,13 @@ jobs:
           mkdir data
           curl -o data/geosite.dat https://github.com/malikshi/v2ray-rules-dat/releases/download/202306091130/geosite.dat
 
+      - name: Download and install netip package
+        run: |
+          go get -u github.com/netip/pkg@latest
+
       - name: Build GeoIP and GeoSite
         run: |
           cd $GITHUB_WORKSPACE
-          go mod init github.com/fyn170/geo-sing-box
-          go get -u github.com/v2fly/v2ray-core/v4@v4.45.2
-          go get -u github.com/v2fly/v2ray-ext/tools/build
           go build github.com/v2fly/v2ray-ext/tools/geoip
           go build github.com/v2fly/v2ray-ext/tools/geosite
 
