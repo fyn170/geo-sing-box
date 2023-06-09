@@ -1,8 +1,9 @@
 name: Generate GeoIP and GeoSite for Indonesia
 
 on:
-  schedule:
-    - cron: "0 17 * * *"
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -15,34 +16,29 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
-          go-version: '1.17'  # Ganti dengan versi Go yang kompatibel
-
-      - name: Create folder
-        run: |
-          mkdir -p geoip
-          mkdir -p geosite
-
-      - name: Copy files
-        run: |
-          cp -r $GITHUB_WORKSPACE/fyn170/geo-sing-box/geoip geoip
-          cp -r $GITHUB_WORKSPACE/fyn170/geo-sing-box/geosite geosite
-
-      - name: Create go.mod
-        run: |
-          cd geoip
-          go mod init geoip
-          cd ../geosite
-          go mod init geosite
+          go-version: '1.16'
 
       - name: Build GeoIP
         run: |
-          cd geoip
-          go build -o geoip.dat
+          go get -u github.com/v2fly/v2ray-core/v4
+          go get -u github.com/v2fly/v2ray-ext/tools/build
+          cd $GOPATH/src/github.com/v2fly/v2ray-ext/tools/geoip
+          go build
+          ./geoip --country-code=ID --output=./geoip.dat --format=legacy
 
       - name: Build GeoSite
         run: |
-          cd geosite
-          go build -o geosite.dat
+          go get -u github.com/v2fly/v2ray-core/v4
+          go get -u github.com/v2fly/v2ray-ext/tools/build
+          cd $GOPATH/src/github.com/v2fly/v2ray-ext/tools/geosite
+          go build
+          ./geosite
+
+      - name: Create artifacts
+        run: |
+          mkdir artifacts
+          cp $GOPATH/src/github.com/v2fly/v2ray-ext/tools/geoip/geoip.dat artifacts/
+          cp $GOPATH/src/github.com/v2fly/v2ray-ext/tools/geosite/geosite.dat artifacts/
 
       - name: Create release
         id: create_release
@@ -50,29 +46,34 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: v${{ github.run_number }}
+          release_name: Release ${{ github.run_number }}
+          body: Auto-generated release
           draft: false
           prerelease: false
 
-      - name: Upload GeoIP
+      - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: GeoIP
-          path: geoip/geoip.dat
-
-      - name: Upload GeoSite
-        uses: actions/upload-artifact@v2
+          name: GeoIP and GeoSite
+          path: artifacts/
+          
+      - name: Attach artifacts to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: GeoSite
-          path: geosite/geosite.dat
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./artifacts/geoip.dat
+          asset_name: geoip.dat
+          asset_content_type: application/octet-stream
 
-      - name: Trigger release
-        uses: peter-evans/create-pull-request@v3
+      - name: Attach artifacts to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: Trigger release
-          title: Release ${{ github.ref }}
-          body: Automated release triggered by schedule
-          branch: release
-          base: main
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./artifacts/geosite.dat
+          asset_name: geosite.dat
+          asset_content_type: application/octet-stream
