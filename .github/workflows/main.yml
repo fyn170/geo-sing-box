@@ -20,12 +20,12 @@ jobs:
 
       - name: Build GeoIP
         run: |
-          cd GeoLite2-Country
+          cd $GITHUB_WORKSPACE/GeoLite2-Country
           go build
 
       - name: Build GeoSite
         run: |
-          cd geosite
+          cd $GITHUB_WORKSPACE/geosite
           go build
 
       - name: Archive artifacts
@@ -33,5 +33,5 @@ jobs:
         with:
           name: artifacts
           path: |
-            GeoLite2-Country/GeoLite2-Country
-            geosite/geosite
+            $GITHUB_WORKSPACE/GeoLite2-Country/GeoLite2-Country
+            $GITHUB_WORKSPACE/geosite/geosite
