@@ -18,12 +18,10 @@ jobs:
         with:
           go-version: '1.16'
 
-      - name: Download GeoLite2 Data
+      - name: Download GeoSite Data
         run: |
           mkdir data
-          curl -o data/GeoLite2-Country.mmdb.gz https://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.tar.gz
-          tar -xzf data/GeoLite2-Country.mmdb.gz -C data/
-          mv data/GeoLite2-Country_*/GeoLite2-Country.mmdb data/
+          curl -o data/geosite.dat https://github.com/malikshi/v2ray-rules-dat/releases/download/202306091130/geosite.dat
 
       - name: Build GeoIP
         run: |
