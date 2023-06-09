@@ -24,8 +24,7 @@ jobs:
           curl -o data/geosite.dat https://github.com/malikshi/v2ray-rules-dat/releases/download/202306091130/geosite.dat
 
       - name: Download and install netip package
-        run: |
-          go mod edit -replace github.com/netip/pkg=git@github.com:netip/pkg.git@latest
+        run: go get github.com/netip/pkg@latest
 
       - name: Build GeoIP and GeoSite
         run: |
