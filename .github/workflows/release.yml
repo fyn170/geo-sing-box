@@ -50,11 +50,11 @@ jobs:
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
+#        with:
 #          tag_name: latest
 #          release_name: Release
-          draft: false
-          prerelease: false
+#          draft: false
+#          prerelease: false
 
       - name: Release geosite.db
         uses: actions/upload-release-asset@v1
