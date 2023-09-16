@@ -1,5 +1,7 @@
-name: Sync GEO Asset
+name: Auto Sync GEO
 on:
+  schedule:
+    - cron: '0 17 * * *'    # Auto update at 00.00 WIB (GMT+7)
   workflow_dispatch:
   push:
     branches:
@@ -49,8 +51,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: latest
-          release_name: Release
+          tag_name: release
+          release_name: latest
           draft: false
           prerelease: false
 
@@ -91,3 +93,10 @@ jobs:
           keep_latest: 1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Trigger Bot Update
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: fyn170/geo-sing-box
+          event-type: sync-geo
