@@ -12,17 +12,17 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
       - name: Delete Previous Tag
         run: |
           git tag -d latest
           git push origin :refs/tags/latest
         if: always()
       
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
