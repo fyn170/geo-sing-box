@@ -80,7 +80,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./sing-geoip/geoip-id.db
+          asset_path: ./sing-geoip/geoip-cn.db
           asset_name: geoip-cn.db
           asset_content_type: application/octet-stream
 
