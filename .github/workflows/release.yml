@@ -93,7 +93,7 @@ jobs:
           asset_content_type: application/octet-stream
 
       - name: Delete Old Release
-        uses: dev-drprasad/delete-older-releases@v0.2.1
+        uses: dev-drprasad/delete-older-releases@v0.3.2
         with:
           repo: fyn170/geo-sing-box
           keep_latest: 1
