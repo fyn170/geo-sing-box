@@ -13,9 +13,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Delete Old Releases
-      uses: dev-drprasad/delete-older-releases@v0.2.1
-      with:
-        repo: fyn170/geo-sing-box # Ganti dengan nama pengguna dan repo yang sesuai
-        keep_latest: 1
+      run: |
+        curl -X DELETE -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/fyn170/geo-sing-box/releases/assets/{asset_id}"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
