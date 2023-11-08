@@ -68,7 +68,8 @@ jobs:
           asset_path: ./sing-geosite/geosite.db
           asset_name: geosite.db
           asset_content_type: application/octet-stream
-
+        if: steps.create_release.outputs.upload_url != ''
+  
       - name: Release geoip.db
         uses: actions/upload-release-asset@v1
         env:
@@ -78,7 +79,8 @@ jobs:
           asset_path: ./sing-geoip/geoip.db
           asset_name: geoip.db
           asset_content_type: application/octet-stream
-
+        if: steps.create_release.outputs.upload_url != ''
+  
       - name: Release geoip-cn.db
         uses: actions/upload-release-asset@v1
         env:
@@ -88,7 +90,8 @@ jobs:
           asset_path: ./sing-geoip/geoip-cn.db
           asset_name: geoip-cn.db
           asset_content_type: application/octet-stream
-
+        if: steps.create_release.outputs.upload_url != ''
+      
       - name: Delete Old Release
         uses: dev-drprasad/delete-older-releases@v0.2.1
         with:
