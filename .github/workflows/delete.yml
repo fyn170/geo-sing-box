@@ -1,0 +1,21 @@
+name: Delete Old Release
+
+on:
+  schedule:
+    - cron: '0 16 * * *' # Jadwal alur kerja untuk dijalankan setiap hari pukul 23:00 WIB (16:00 UTC)
+
+jobs:
+  delete_release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Delete Old Releases
+      uses: dev-drprasad/delete-older-releases@v0.2.1
+      with:
+        repo: fyn170/geo-sing-box # Ganti dengan nama pengguna dan repo yang sesuai
+        keep_latest: 1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
