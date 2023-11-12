@@ -56,17 +56,6 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Create Draft Release
-        id: create_draft_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: draft
-          release_name: Draft Release
-          draft: true
-          prerelease: false
-
       - name: Release geosite.db
         uses: actions/upload-release-asset@v1
         env:
