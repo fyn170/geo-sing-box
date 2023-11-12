@@ -51,7 +51,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: latest
+          tag_name: latest-${{ steps.time.outputs.time }}
           release_name: Latest Release
           draft: false
           prerelease: false
