@@ -1,24 +1,24 @@
-name: Delete Old Release
-
+name: Auto Delete Old Releases
 on:
-  repository_dispatch:
-    types: [delete-old-release]
+  schedule:
+    - cron: '0 16 * * *' # Auto delete at 23:00 WIB (16:00 UTC)
 
 jobs:
-  delete_release:
+  get_latest_release_id:
     runs-on: ubuntu-latest
     steps:
-    - name: Get Latest Release ID
-      id: get_release
-      run: |
-        latest_release_id=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/fyn170/geo-sing-box/releases/latest" | jq '.id')
-        echo "::set-output name=latest_release_id::$latest_release_id"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Get Latest Release ID
+        id: get_release
+        run: |
+          latest_id=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/owner/repository/releases/latest" | jq -r '.id')
+          echo "::set-output name=latest_id::$latest_id"
 
-    - name: Delete Previous Releases
-      if: steps.get_release.outputs.latest_release_id != null
-      run: |
-        curl -X DELETE -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/fyn170/geo-sing-box/releases/${{ steps.get_release.outputs.latest_release_id }}"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  delete_old_releases:
+    needs: get_latest_release_id
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete Old Releases
+        if: steps.get_release.outputs.latest_id != ''
+        run: |
+          latest_id=${{ needs.get_latest_release_id.outputs.latest_id }}
+          curl -X DELETE -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/fyn170/geo-sing-box/releases/$latest_id"
