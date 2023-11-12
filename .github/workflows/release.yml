@@ -86,13 +86,14 @@ jobs:
           asset_name: geoip-cn.db
           asset_content_type: application/octet-stream
 
-      - name: Delete Old Draft Release
-        uses: dev-drprasad/delete-older-releases@v0.2.1
+      - name: Delete Draft Release
+        uses: softprops/action-gh-release@v1
         with:
-          repo: fyn170/geo-sing-box
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: draft
+          owner: fyn170
+          repo: geo-sing-box
           keep_latest: 1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Trigger Bot Update
         uses: peter-evans/repository-dispatch@v1
