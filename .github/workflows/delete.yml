@@ -10,7 +10,7 @@ jobs:
       - name: Get Latest Release ID
         id: get_release
         run: |
-          latest_id=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/owner/repository/releases/latest" | jq -r '.id')
+          latest_id=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/fyn170/geo-sing-box/releases/latest" | jq -r '.id')
           echo "::set-output name=latest_id::$latest_id"
 
   delete_old_releases:
