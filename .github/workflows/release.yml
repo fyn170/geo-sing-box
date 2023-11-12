@@ -87,13 +87,13 @@ jobs:
           asset_content_type: application/octet-stream
 
       - name: Trigger Delete Old Release
-        run: |
-          curl -X POST \
-          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          -H "Accept: application/vnd.github.everest-preview+json" \
-          -H "Content-Type: application/json" \
-          https://api.github.com/repos/fyn170/geo-sing-box/actions/workflows/{workflow_id}/dispatches \
-          -d '{"ref":"main"}'
+        uses: repo-dispatch@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          owner: fyn170
+          repo: geo-sing-box
+          workflow: delete.yml
+          inputs: {}
       
       - name: Trigger Bot Update
         uses: peter-evans/repository-dispatch@v1
