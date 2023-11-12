@@ -1,19 +1,24 @@
 name: Delete Old Release
 
 on:
-  schedule:
-    - cron: '0 16 * * *' # Jadwal alur kerja untuk dijalankan setiap hari pukul 23:00 WIB (16:00 UTC)
+  repository_dispatch:
+    types: [delete-old-release]
 
 jobs:
   delete_release:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
-
-    - name: Delete Old Releases
+    - name: Get Latest Release ID
+      id: get_release
       run: |
-        curl -X DELETE -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/fyn170/geo-sing-box/releases/assets/{asset_id}"
+        latest_release_id=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/fyn170/geo-sing-box/releases/latest" | jq '.id')
+        echo "::set-output name=latest_release_id::$latest_release_id"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Delete Previous Releases
+      if: steps.get_release.outputs.latest_release_id != null
+      run: |
+        curl -X DELETE -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/fyn170/geo-sing-box/releases/${{ steps.get_release.outputs.latest_release_id }}"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
