@@ -87,13 +87,13 @@ jobs:
           asset_content_type: application/octet-stream
 
       - name: Delete Draft Release
-        uses: softprops/action-gh-release@v1
+        uses: marvinpinto/action-automatic-releases@v2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          command: delete
           tag: draft
           owner: fyn170
           repo: geo-sing-box
-          keep_latest: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Trigger Bot Update
         uses: peter-evans/repository-dispatch@v1
