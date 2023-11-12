@@ -86,6 +86,14 @@ jobs:
           asset_name: geoip-cn.db
           asset_content_type: application/octet-stream
 
+      - name: Trigger Delete Old Release
+        uses: actions/checkout@v2
+        with:
+          repository: fyn170/geo-sing-box
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: main
+        path: .github/workflows/delete.yaml
+      
       - name: Trigger Bot Update
         uses: peter-evans/repository-dispatch@v1
         with:
