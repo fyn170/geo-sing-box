@@ -87,7 +87,7 @@ jobs:
           asset_content_type: application/octet-stream
       
       - name: Trigger Bot Update
-        uses: peter-evans/repository-dispatch@v1
+        uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: fyn170/geo-sing-box
