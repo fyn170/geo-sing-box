@@ -1,4 +1,4 @@
-name: Auto Delete Old Releases
+name: Delete Old Releases
 on:
   schedule:
     - cron: '0 16 * * *' # Auto delete at 23:00 WIB (16:00 UTC)
@@ -21,4 +21,6 @@ jobs:
         if: steps.get_release.outputs.latest_id != ''
         run: |
           latest_id=${{ needs.get_latest_release_id.outputs.latest_id }}
-          curl -X DELETE -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/fyn170/geo-sing-box/releases/$latest_id"
+          curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/fyn170/geo-sing-box/releases" | \
+            jq -r '.[] | select(.id != $latest_id) | .tag_name' | \
+            xargs -I {} curl -X DELETE -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/fyn170/geo-sing-box/releases/tags/{}"
