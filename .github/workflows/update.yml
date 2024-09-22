@@ -1,0 +1,91 @@
+name: Auto Sync GEO
+on:
+  schedule:
+    - cron: '0 17 * * *'    # Auto update at 00.00 WIB (GMT+7)
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "latest"  # Automatically use the latest Go version
+
+      - name: Build geosite
+        id: build_site
+        run: |
+          cd sing-geosite
+          go run -v .
+
+      - name: Build geoip
+        id: build_ip
+        run: |
+          cd sing-geoip
+          go run -v .
+
+      - name: Set timezone to WIB Jakarta
+        uses: szenius/set-timezone@v2.0
+        with:
+          timezoneLinux: "Asia/Jakarta"
+          timezoneMacos: "Asia/Jakarta"
+          timezoneWindows: "Indonesia Standard Time"
+
+      - name: Get current time
+        id: time
+        run: echo "::set-output name=time::$(date +'%Y%m%d%H%M%S')"
+
+      - name: Create Latest Release
+        id: create_latest_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: latest-${{ steps.time.outputs.time }}
+          release_name: Latest Release
+          draft: false
+          prerelease: false
+
+      - name: Release geosite.db
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_latest_release.outputs.upload_url }}
+          asset_path: ./sing-geosite/geosite.db
+          asset_name: geosite.db
+          asset_content_type: application/octet-stream
+
+      - name: Release geoip.db
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_latest_release.outputs.upload_url }}
+          asset_path: ./sing-geoip/geoip.db
+          asset_name: geoip.db
+          asset_content_type: application/octet-stream
+      
+      - name: Create or Update Latest Tag
+        run: |
+          git fetch --tags
+          git tag -d latest || true
+          git tag latest ${{ github.sha }}
+          git push origin --tags --force
+      
+      - name: Trigger Bot Update
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: fyn170/geo-sing-box
+          event-type: sync-geo
