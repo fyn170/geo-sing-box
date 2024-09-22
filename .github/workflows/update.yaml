@@ -1,4 +1,4 @@
-name: Auto Sync GEO
+name: Sync GEO
 on:
   schedule:
     - cron: '0 17 * * *'    # Auto update at 00.00 WIB (GMT+7)
