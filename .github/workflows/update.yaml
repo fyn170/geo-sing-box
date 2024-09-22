@@ -17,10 +17,17 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Get Latest Go Version
+        id: get_latest_go_version
+        run: |
+          curl -sL https://golang.org/VERSION?m=text > go_version.txt
+          echo "Go version found: $(cat go_version.txt)"
+          echo "::set-output name=go_version::$(cat go_version.txt)"
+
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: "latest"  # Automatically use the latest Go version
+          go-version: ${{ steps.get_latest_go_version.outputs.go_version }}
 
       - name: Build geosite
         id: build_site
