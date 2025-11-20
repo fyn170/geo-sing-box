@@ -1,6 +1,6 @@
 module sing-geosite
 
-go 1.18
+go 1.24.0
 
 require (
 	github.com/google/go-github/v45 v45.2.0
@@ -18,9 +18,9 @@ require (
 	github.com/miekg/dns v1.1.57 // indirect
 	github.com/sagernet/sing-dns v0.1.11 // indirect
 	go4.org/netipx v0.0.0-20231129151722-fdeea329fbba // indirect
-	golang.org/x/crypto v0.21.0 // indirect
+	golang.org/x/crypto v0.45.0 // indirect
 	golang.org/x/mod v0.14.0 // indirect
-	golang.org/x/net v0.23.0 // indirect
-	golang.org/x/sys v0.18.0 // indirect
+	golang.org/x/net v0.47.0 // indirect
+	golang.org/x/sys v0.38.0 // indirect
 	golang.org/x/tools v0.16.0 // indirect
 )
